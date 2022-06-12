@@ -63,54 +63,82 @@ function layerCharacteristics(rawData) {
 // Create a function which builds the map itself:
 function createMap(earthquakes) {
 
-  // Define light map layer:
-  var light = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  // Define greyscale map layer:
+  var greyscale = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: 18,
   id: "light-v10",
   accessToken: API_KEY
   });
 
-  // Define dark map layer:
-  var dark = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-  maxZoom: 18,
-  id: "dark-v10",
-  accessToken: API_KEY
-  });
-
-  // Define satelite map layer:
-  var satelite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  // Define satellite map layer:
+  var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: 18,
   id: "mapbox.satellite",
   accessToken: API_KEY
   });
 
+  // Define outdoors map layer:
+  var outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+  maxZoom: 18,
+  id: "mapbox/outdoors-v11",
+  accessToken: API_KEY
+});
 
   // Create a baseMaps variable to hold the three base layers:
   var baseMaps = {
-    "Light Map View": light,
-    "Dark Map View": dark,
-    "Satelite Map View": satelite
+    "Greyscale Map View": greyscale,
+    "Satellite Map View": satellite,
+    "Outdoor Map View": outdoors
   };
+
+  var tectonicplates = new L.LayerGroup();
+
+  // Get our tectonic plate data.
+  d3.json("Data/PB2002_boundaries.json").then(function(platedata) {
+      // Adding our geoJSON data, along with style information, to the tectonicplates
+      // layer.
+      L.geoJson(platedata, {
+        color: "red",
+        weight: 2
+      })
+      .addTo(tectonicplates);
+
+      // Then add the tectonicplates layer to the map.
+      tectonicplates.addTo(myMap);
+    });
 
   // Create an overlayMaps variable to hold the marker layer:
   var overlayMaps = {
-    "Earthquakes": earthquakes
+    "Earthquakes": earthquakes,
+    "Plates" : tectonicplates
   };
 
   // Create our map, giving it the tiles and layers specified above:
   var myMap = L.map("map", {
     center: [40.4637,-3.7492],
     zoom: 2,
-    layers: [light, dark, satelite, earthquakes]
+    layers: [greyscale, satellite, outdoors, earthquakes, tectonicplates]
   });
 
   // Create a layer control and add it to the map itself:
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Create a legend for the map and position it in the appropriate place:
   // The code below is an adaptation of an example found at 'https://gis.stackexchange.com/questions/133630/adding-leaflet-legend'.

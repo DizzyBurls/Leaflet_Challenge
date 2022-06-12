@@ -79,8 +79,8 @@ function createMap(earthquakes) {
   accessToken: API_KEY
   });
 
-  // Define satelite map layer:
-  var satelite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  // Define satellite map layer:
+  var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: 18,
   id: "mapbox.satellite",
@@ -92,7 +92,7 @@ function createMap(earthquakes) {
   var baseMaps = {
     "Light Map View": light,
     "Dark Map View": dark,
-    "Satelite Map View": satelite
+    "Satellite Map View": satellite
   };
 
   // Create an overlayMaps variable to hold the marker layer:
@@ -104,7 +104,7 @@ function createMap(earthquakes) {
   var myMap = L.map("map", {
     center: [40.4637,-3.7492],
     zoom: 2,
-    layers: [light, dark, satelite, earthquakes]
+    layers: [light, dark, satellite, earthquakes]
   });
 
   // Create a layer control and add it to the map itself:
