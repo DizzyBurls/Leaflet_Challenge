@@ -94,23 +94,24 @@ function createMap(earthquakes) {
     "Outdoor Map View": outdoors
   };
 
+  // Create a new laterGroup for the tectonic plates overlay:
   var tectonicplates = new L.LayerGroup();
 
-  // Get our tectonic plate data.
-  d3.json("Data/PB2002_boundaries.json").then(function(platedata) {
-      // Adding our geoJSON data, along with style information, to the tectonicplates
-      // layer.
-      L.geoJson(platedata, {
-        color: "red",
+      // Get our tectonic plate data from the locally stored database:
+      d3.json("Data/PB2002_plates.json", function(platepaths) {
+
+      // Adding our data to the tectonicplates layerGroup:
+      L.geoJson(platepaths, {
+        color: "grey",
         weight: 2
       })
       .addTo(tectonicplates);
 
-      // Then add the tectonicplates layer to the map.
+      // Then add the tectonicplates layerGroup to the map.
       tectonicplates.addTo(myMap);
     });
 
-  // Create an overlayMaps variable to hold the marker layer:
+  // Create an overlayMaps variable to hold the 'marker' and 'tectonic plate' layers:
   var overlayMaps = {
     "Earthquakes": earthquakes,
     "Plates" : tectonicplates
@@ -127,18 +128,6 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
-
-
-
-
-
-
-
-
-
-
-
-
 
   // Create a legend for the map and position it in the appropriate place:
   // The code below is an adaptation of an example found at 'https://gis.stackexchange.com/questions/133630/adding-leaflet-legend'.
